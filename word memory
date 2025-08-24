@@ -1,1 +1,14 @@
-
+import random
+import time
+def generate_sequence(length):
+    sequence = []
+    for _ in range(length):
+        sequence.append(random.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"))
+    return sequence 
+# Test your function
+print(generate_sequence(5))
+def show_sequence(sequence):
+    print("Remember this sequence:")
+    print(" ".join(sequence))
+    time.sleep(3) # Wait for 3 seconds
+    print("\n" * 50)
