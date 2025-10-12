@@ -1,5 +1,4 @@
 import random
-
 # Function to print the cards
 def display_cards(cards):
   s = ""
@@ -112,19 +111,64 @@ def new_deck():
             deck.append(card(i,r,v))
     return deck
 
+def cal_value(hand):
+   value = 0
+   for i in hand:
+     value = i.value + value
+   return value
+
 #main
 deck = []
+player = []
+dealer = []
 deck.extend(new_deck())
 deck.extend(new_deck())
 deck.extend(new_deck())
 random.shuffle(deck)
-print(len(deck))
-deck.pop().print_card()
-deck.pop().print_card()
-print(len(deck))
-print(len(deck))
-display_cards([deck.pop(),deck.pop()])
-print(len(deck))
-mycard = deck.pop()
-mycard.facedown = True
-display_cards([mycard])
+
+# print(len(deck))
+# display_cards([deck.pop(),deck.pop()])
+#print(len(deck))
+#deck.pop().print_card()
+#deck.pop().print_card()
+#print(len(deck))
+#print(len(deck))
+#display_cards([deck.pop(),deck.pop()])
+#print(len(deck))
+#mycard = deck.pop()
+#mycard.facedown = True
+#display_cards([mycard])
+temp = deck.pop()
+player.append(temp)
+temp = deck.pop()
+player.append(temp)
+temp = deck.pop()
+dealer.append(temp)
+temp = deck.pop()
+temp.facedown = True
+dealer.append(temp)
+print("Dealer:")
+display_cards(dealer)
+
+while True:
+  print("player")
+  display_cards(player)
+  choice = input("Hit (H) for another card, Stand (S) to stop.")
+  if choice == "H":
+    temp = deck.pop()
+    player.append(temp)
+    continue
+  elif choice == "S":
+    print("End of turn.")
+    break
+
+
+print("Player's Deck")
+display_cards(player)
+
+print("Dealer's Deck:")
+temp.facedown = False
+display_cards(dealer)
+value = cal_value(dealer)
+print ("Dealer's Deck value:")
+print (value)
