@@ -1,4 +1,4 @@
-Vimport random
+import random
 # Function to print the cards
 def display_cards(cards):
   s = ""
