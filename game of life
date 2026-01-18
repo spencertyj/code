@@ -72,5 +72,50 @@ rand_btn = tk.Button(button_frame, text="Random",
 command=random_board)
 rand_btn.grid(row=0, column=1, padx=5)
 
+for dr in (-1, 0, 1):
+    for dc in (-1, 0, 1):
+        if dr == 0 and dc == 0:
+            continue
+        nr = r + dr
+        nc = c + dc
+def count_neighbours(r, c):
+    count = 0
+    for dr in (-1, 0, 1):
+        for dc in (-1, 0, 1):
+
+            if dr == 0 and dc == 0:
+                continue
+            nr = r + dr
+            nc = c + dc
+
+            if 0 <= nr < ROWS and 0 <= nc < COLS:
+                if board[nr][nc] == 1:
+                    count +=1
+    return count
+def make_empty_board():
+    new_board = []
+    for r in range(ROWS):
+        row = []
+        for c in range(COLS):
+            row.append(0)
+        new_board.append(row)
+    return new_board
+def step():
+    global board
+    new_board = make_empty_board()
+    for r in range(ROWS):
+        for c in range(COLS):
+            n = count_neighbours(r, c)
+            if board[r][c] == 1:
+                new_board[r][c] = 1 if n in (2, 3) else 0
+            else:
+                new_board[r][c] = 1 if n == 3 else 0
+    board = new_board
+    draw_board()
+
+step_btn = tk.Button(button_frame, text ="Step",
+command=step)
+step_btn.grid(row=0, column=2, padx=5)
+
 draw_board()
 root.mainloop()
