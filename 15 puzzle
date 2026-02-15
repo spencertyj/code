@@ -1,8 +1,6 @@
 import tkinter as tk
 import random
 
-
-
 SIZE = 80
 ROWS = 4
 COLS = 4
@@ -15,13 +13,16 @@ root.title("15 Puzzle")
 
 canvas = tk.Canvas(root, width=WIDTH, height=HEIGHT, bg="white")
 canvas.pack()
+
 def find_empty():
     for r in range(ROWS):
         for c in range(COLS):
             if board[r][c] == 0:
-                return r,c
+                return r, c
+
 def is_adjacent(r1, c1, r2, c2):
     return abs(r1 - r2) + abs(c1 - c2) == 1
+
 def click(event):
     c = event.x // SIZE
     r = event.y // SIZE
@@ -31,16 +32,17 @@ def click(event):
     er, ec = find_empty()
 
     if is_adjacent(r, c, er, ec):
-        # TODO: swap tile with empty
-        board[er][ec] = r,c
+        board[er][ec] = board[r][c]
         board[r][c] = 0
         draw_board()
+
 canvas.bind("<Button-1>", click)
+
 def shuffle():
     for i in range(100):
         er, ec = find_empty()
         moves = []
-        for dr, dc in [(1,0), (-1,0), (0,1), (0,-1)]:
+        for dr, dc in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
             nr = er + dr
             nc = ec + dc
             if 0 <= nr < ROWS and 0 <= nc < COLS:
@@ -50,24 +52,26 @@ def shuffle():
         board[er][ec] = board[r][c]
         board[r][c] = 0
     draw_board()
-    btn = tk.Button(root, text="Shuffle", command=shuffle)
-    btn.pack(pady=5)
+btn = tk.Button(root, text="Shuffle", command=shuffle)
+btn.pack(pady=5)
 
 def is_solved():
     expected = 1
     for r in range(ROWS):
         for c in range(COLS):
-            if r == ROWS-1 and c == COLS-1:
+            if r == ROWS - 1 and c == COLS - 1:
                 return board[r][c] == 0
             if board[r][c] != expected:
                 return False
             expected += 1
+
 board = [
-    [1,2,3,4],
-    [5,6,7,8],
-    [9,10,11,12],
-    [13,14,15,0]
+    [1, 2, 3, 4],
+    [5, 6, 7, 8],
+    [9, 10, 11, 12],
+    [13, 14, 15, 0]
 ]
+
 def draw_tile(r, c):
     x1 = c * SIZE
     y1 = r * SIZE
@@ -81,30 +85,18 @@ def draw_tile(r, c):
         return
     
     canvas.create_rectangle(x1, y1, x2, y2, fill="skyblue", outline="gray")
-    canvas.create_text(x1 + SIZE//2, y1 + SIZE//2, text=str(value), font=("Arial", 24))
+    canvas.create_text(x1 + SIZE // 2, y1 + SIZE // 2, text=str(value), font=("Arial", 24))
 
 def draw_board():
     canvas.delete("all")
     for r in range(ROWS):
         for c in range(COLS):
-            draw_tile(r,c)
-
-def is_solved():
-    expected = 1
-    for r in range(ROWS):
-        for c in range(COLS):
-            if r == ROWS-1 and c == COLS-1:
-                return board[r][c] == 0 
-            if board[r][c] != expected:
-                return False
-            expected += 1
+            draw_tile(r, c)
 
 draw_board()
+shuffle()
 
 if is_solved():
     print("Solved!")
 
-
-
-                            
 root.mainloop()
