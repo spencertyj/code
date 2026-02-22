@@ -14,6 +14,14 @@ root.title("15 Puzzle")
 canvas = tk.Canvas(root, width=WIDTH, height=HEIGHT, bg="white")
 canvas.pack()
 
+# Initialize board at the top
+board = [
+    [1, 2, 3, 4],
+    [5, 6, 7, 8],
+    [9, 10, 11, 12],
+    [13, 14, 15, 0]
+]
+
 def find_empty():
     for r in range(ROWS):
         for c in range(COLS):
@@ -23,12 +31,52 @@ def find_empty():
 def is_adjacent(r1, c1, r2, c2):
     return abs(r1 - r2) + abs(c1 - c2) == 1
 
+def is_solved():
+    expected = 1
+    for r in range(ROWS):
+        for c in range(COLS):
+            if r == ROWS - 1 and c == COLS - 1:
+                return board[r][c] == 0
+            if board[r][c] != expected:
+                return False
+            expected += 1
+    return True
+
+def draw_tile(r, c):
+    x1 = c * SIZE
+    y1 = r * SIZE
+    x2 = x1 + SIZE
+    y2 = y1 + SIZE
+
+    value = board[r][c]
+
+    if value == 0:
+        canvas.create_rectangle(x1, y1, x2, y2, fill="lightgray", outline="gray")
+        return
+    
+    canvas.create_rectangle(x1, y1, x2, y2, fill="skyblue", outline="gray")
+    canvas.create_text(x1 + SIZE // 2, y1 + SIZE // 2, text=str(value), font=("Arial", 24))
+
+def draw_board():
+    canvas.delete("all")
+    for r in range(ROWS):
+        for c in range(COLS):
+            draw_tile(r, c)
+    
+    # Check if solved and display message
+    if is_solved():
+        canvas.create_text(WIDTH // 2, HEIGHT // 2, text="Solved!", font=("Arial", 32, "bold"), fill="green")
+
 def click(event):
     c = event.x // SIZE
     r = event.y // SIZE
 
     if not (0 <= r < ROWS and 0 <= c < COLS):
         return
+    
+    if is_solved():
+        return
+    
     er, ec = find_empty()
 
     if is_adjacent(r, c, er, ec):
@@ -52,51 +100,11 @@ def shuffle():
         board[er][ec] = board[r][c]
         board[r][c] = 0
     draw_board()
+
 btn = tk.Button(root, text="Shuffle", command=shuffle)
 btn.pack(pady=5)
 
-def is_solved():
-    expected = 1
-    for r in range(ROWS):
-        for c in range(COLS):
-            if r == ROWS - 1 and c == COLS - 1:
-                return board[r][c] == 0
-            if board[r][c] != expected:
-                return False
-            expected += 1
-
-board = [
-    [1, 2, 3, 4],
-    [5, 6, 7, 8],
-    [9, 10, 11, 12],
-    [13, 14, 15, 0]
-]
-
-def draw_tile(r, c):
-    x1 = c * SIZE
-    y1 = r * SIZE
-    x2 = x1 + SIZE
-    y2 = y1 + SIZE
-
-    value = board[r][c]
-
-    if value == 0:
-        canvas.create_rectangle(x1, y1, x2, y2, fill="lightgray", outline="gray")
-        return
-    
-    canvas.create_rectangle(x1, y1, x2, y2, fill="skyblue", outline="gray")
-    canvas.create_text(x1 + SIZE // 2, y1 + SIZE // 2, text=str(value), font=("Arial", 24))
-
-def draw_board():
-    canvas.delete("all")
-    for r in range(ROWS):
-        for c in range(COLS):
-            draw_tile(r, c)
-
 draw_board()
 shuffle()
-
-if is_solved():
-    print("Solved!")
 
 root.mainloop()
