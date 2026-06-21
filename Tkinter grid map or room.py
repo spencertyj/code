@@ -1,15 +1,17 @@
 MAP = [
-    "############",
-    "##.........#",
-    "#..##.#.#.##",
-    "#.##..P.....",
-    "#..##..##.#.",
-    "##....#....#",
-    "############"
+    "##########",
+    "##.....#.#",
+    "#..##.#..#",
+    "#.##..P..#",
+    "#..##..#.#",
+    "##....#..#",
+    "##########"
 ]
 
 import tkinter as tk
-TILE = 48
+from PIL import Image, ImageTk
+
+TILE = 8
 ROWS = len(MAP)
 COLS = len(MAP[0])
 
@@ -17,10 +19,31 @@ WIDTH = COLS * TILE
 HEIGHT = ROWS * TILE
 
 root = tk.Tk()
+root.geometry("300x300")
+img = Image.open("tiles/floor.png")
+img = img.resize((100, 100), Image.Resampling.LANCZOS)
+tk_img = ImageTk.PhotoImage(img)
+label = tk.Label(root, image=tk_img)
+label.pack()
 root.title("Map Walker")
 canvas = tk.Canvas(root, width=WIDTH, height=HEIGHT)
 canvas.pack()
 
+images = {
+    'floor': tk.PhotoImage(file="tiles/floor.png"),
+    'wall': tk.PhotoImage(file="tiles/wall.png"),
+    'player': tk.PhotoImage(file="tiles/player.png"),
+}
+
+def draw_image_tile(r, c, key):
+    x = c * TILE
+    y = r * TILE
+    canvas.create_image(x, y, image=images[key], anchor="nw")
+tiles_lookup = {
+    '#': 'wall',
+    '.': 'floor',
+    'P': 'player',
+}
 player_r = 0
 player_c = 0
 
@@ -29,33 +52,33 @@ for r in range(ROWS):
         if MAP[r][c] == "P":
             player_r, player_c = r, c
 
-#def load_map(maps):
-#    with open(maps, 'r') as f:
-#        lines = f.readlines()
-#
-#    #TODO: remove \n from each line 
-#    lines = [line.strip() for line in lines]
-#
-#    if len(lines) == 0:
-#        raise ValueError('Map is empty')
-#
-#   width = len(lines[0])
-#    for line in lines:
-#         if len(line) != width:
-#           raise ValueError('Map is not rectangular')
-#  
-#    allowed = set('#.P')
-#    p_count = 0
-#    for r in range(len(lines)):
-#        for c in range(len(lines[0])):
-#             ch = lines[r][c]
-#        if ch not in allowed:
-#            raise ValueError(f"Invalid character '{ch}' at ({r}, {c})")
-#       if ch == 'P':
-#            p_count += 1
-#     if p_count != 1:
-#       raise ValueError('Map must contain exactly one player')
-#     return lines
+def load_map(maps):
+    with open(maps, 'r') as f:
+        lines = f.readlines()
+
+    #TODO: remove \n from each line 
+    lines = [line.strip() for line in lines]
+
+    if len(lines) == 0:
+        raise ValueError('Map is empty')
+
+    width = len(lines[0])
+    for line in lines:
+        if len(line) != width:
+            raise ValueError('Map is not rectangular')
+    
+    allowed = set('#.P')
+    p_count = 0
+    for r in range(len(lines)):
+        for c in range(len(lines[0])):
+             ch = lines[r][c]
+        if ch not in allowed:
+            raise ValueError(f"Invalid character '{ch}' at ({r}, {c})")
+        if ch == 'P':
+            p_count += 1
+    if p_count != 1:
+        raise ValueError('Map must contain exactly one player')
+    return lines
 
 def draw_tile(r, c, ch):
     x1 = c * TILE
@@ -79,8 +102,10 @@ def draw_world():
     canvas.delete("all")
     for r in range(ROWS):
         for c in range(COLS):
-            draw_tile(r, c, MAP[r][c])
-    draw_player(player_r, player_c)
+            ch = MAP[r][c]
+            base = tiles_lookup[ch]
+            draw_image_tile(r, c, base)
+    draw_image_tile(player_r, player_c, 'player')
 draw_world()
 
 def try_move(dr, dc):
@@ -110,4 +135,5 @@ def on_key(event):
     elif event.keysym == "Right":
         try_move(0, 1)
 root.bind("<Key>", on_key)
+
 root.mainloop()
